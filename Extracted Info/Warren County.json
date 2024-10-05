@@ -9,16 +9,22 @@
             "Case Number": "20241603",
             "Date of Death": "06/09/2024",
             "Opened": "09/30/2024",
-            "Closed": "09/30/2024"
+            "Closed": "09/30/2024",
+            "City": "Lebanon",
+            "State": "OH",
+            "ZIP": "45036"
         },
         "fiduciary_info": {
-            "Fiduciary #1": "Bullock, Kathy M.",
+            "Fiduciary 1": "Bullock, Kathy M.",
             "Type": "APP",
             "Address": "",
             "City/State/ZIP": "Oregonia, OH 45054",
             "Date Appointed": "",
             "Telephone": "(513) 502-6396",
-            "Relationship": "Daughter"
+            "Relationship": "Daughter",
+            "City": "Oregonia",
+            "State": "OH",
+            "ZIP": "45054"
         }
     },
     {
@@ -31,16 +37,22 @@
             "Case Number": "20241602",
             "Date of Death": "12/19/2022",
             "Opened": "09/30/2024",
-            "Closed": ""
+            "Closed": "",
+            "City": "Lebanon",
+            "State": "OH",
+            "ZIP": "45036"
         },
         "fiduciary_info": {
-            "Fiduciary #1": "Swank, Kimberly Stein",
+            "Fiduciary 1": "Swank, Kimberly Stein",
             "Type": "WWA",
             "Address": "1132 Golf Club Dr.",
             "City/State/ZIP": "Lebanon, OH 45036",
             "Date Appointed": "",
             "Telephone": "(513) 404-2150",
-            "Relationship": "Daughter"
+            "Relationship": "Daughter",
+            "City": "Lebanon",
+            "State": "OH",
+            "ZIP": "45036"
         }
     },
     {
@@ -53,16 +65,22 @@
             "Case Number": "20241601",
             "Date of Death": "08/16/2024",
             "Opened": "09/30/2024",
-            "Closed": ""
+            "Closed": "",
+            "City": "Loveland",
+            "State": "OH",
+            "ZIP": "45140"
         },
         "fiduciary_info": {
-            "Fiduciary #1": "Weldy, Molly E.",
+            "Fiduciary 1": "Weldy, Molly E.",
             "Type": "ADM",
             "Address": "90941 Esther Drive",
             "City/State/ZIP": "Loveland, OH 45140",
             "Date Appointed": "09/30/2024",
             "Telephone": "(513) 967-3071",
-            "Relationship": "Spouse"
+            "Relationship": "Spouse",
+            "City": "Loveland",
+            "State": "OH",
+            "ZIP": "45140"
         }
     }
 ]

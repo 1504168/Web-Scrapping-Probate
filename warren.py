@@ -3,13 +3,15 @@ import json
 import bs4
 import requests
 
+from util import split_city_state_zip
+
 
 class WarrenCounty:
 
     @staticmethod
     def _parse_date(date):
-        # Assuming the date is in the format 'YYYY-MM-DD'
-        year, month, day = date.split('-')
+        # Assuming the date is in the format 'MM/DD/YYYY'
+        month, day, year = date.split('/')
         return year, month, day
 
     @staticmethod
@@ -20,7 +22,7 @@ class WarrenCounty:
             'fmonth': month,
             'fday': day,
             'fyear': year,
-            'block': '25',
+            'block': '250',
             'file_type': '4',
             'search_type': '9',
             'submit': 'Search',
@@ -32,6 +34,12 @@ class WarrenCounty:
     def _extract_case_links(response_text):
 
         soup = bs4.BeautifulSoup(response_text, 'html.parser')
+
+        total_matches_text = soup.select_one('#cl_body > p > span > b').text
+        if 'No Matches Displayed' in total_matches_text:
+            return []
+
+        print(f'Total matches: {total_matches_text}')
         table = soup.select_one('#cl_body > table')
 
         estate_case_links = []
@@ -55,8 +63,17 @@ class WarrenCounty:
         for td in current_tr.find_all('td', {'class': 'back-lt'}):
             for b in td.find_all('b'):
                 key = b.text.strip(': ')
+                if key == 'Fiduciary #1':
+                    key = 'Fiduciary 1'
+
                 value = b.next_sibling.strip()
                 info_dict[key] = value
+
+        if 'City/State/ZIP' in info_dict:
+            city, state, zip_code = split_city_state_zip(info_dict['City/State/ZIP'])
+            info_dict['City'] = city
+            info_dict['State'] = state
+            info_dict['Zip'] = zip_code
 
         return info_dict
 
@@ -94,6 +111,7 @@ class WarrenCounty:
         }
         response = session.post(url, headers=headers, data=payload)
         estate_links = WarrenCounty._extract_case_links(response.text)
+        print(f'Found {len(estate_links)} estate cases')
 
         all_case_details = []
 
@@ -103,7 +121,7 @@ class WarrenCounty:
         return all_case_details
 
 
-estate_decedent_info = WarrenCounty.collect_data("2024-09-30")
-
-with open('Extracted Info/Warren County.json', 'w') as f:
-    json.dump(estate_decedent_info, f, indent=4)
+# estate_decedent_info = WarrenCounty.collect_data("09/30/2024")
+#
+# with open('Extracted Info/Warren County.json', 'w') as f:
+#     json.dump(estate_decedent_info, f, indent=4)

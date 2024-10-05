@@ -1,0 +1,59 @@
+[
+    {
+        "case_number": "2024 ES 00583",
+        "decedent_info": {
+            "Decedent": "Mathes, Kelly",
+            "Address": "5108 Oakmont Dr.",
+            "City/State/Zip": "Goshen, OH 45122",
+            "City": "Goshen",
+            "State": "OH",
+            "Zip": "45122"
+        },
+        "fiduciary_info": {
+            "Fiduciary 1": "Mathes, Troy",
+            "Address": "5108 Oakmont Dr.",
+            "City/State/Zip": "Goshen, OH 45122",
+            "City": "Goshen",
+            "State": "OH",
+            "Zip": "45122"
+        }
+    },
+    {
+        "case_number": "2024 ES 00584",
+        "decedent_info": {
+            "Decedent": "Larison, George D",
+            "Address": "2718 State Route 232",
+            "City/State/Zip": "Bethel, OH 45106",
+            "City": "Bethel",
+            "State": "OH",
+            "Zip": "45106"
+        },
+        "fiduciary_info": {
+            "Fiduciary 1": "Marshall, Donna Denise",
+            "Address": "529 Elm Tree Court",
+            "City/State/Zip": "Cincinnati, OH 45244",
+            "City": "Cincinnati",
+            "State": "OH",
+            "Zip": "45244"
+        }
+    },
+    {
+        "case_number": "2024 ES 00587",
+        "decedent_info": {
+            "Decedent": "Trageser, Paul W",
+            "Address": "496 Wesley Drive",
+            "City/State/Zip": "Cincinnati, OH 45244",
+            "City": "Cincinnati",
+            "State": "OH",
+            "Zip": "45244"
+        },
+        "fiduciary_info": {
+            "Fiduciary 1": "Allbrinck, j Jeffrey",
+            "Address": "600 Vine Street Suite 2650",
+            "City/State/Zip": "Cincinnati, OH 45202",
+            "City": "Cincinnati",
+            "State": "OH",
+            "Zip": "45202"
+        }
+    }
+]

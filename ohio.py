@@ -1,7 +1,7 @@
-import json
-
 import bs4
 import requests
+
+from util import split_city_state_zip
 
 
 class OhioCounty:
@@ -9,9 +9,44 @@ class OhioCounty:
     ACCEPT_CONTINUE_URL = "https://probatecourt.bcohio.gov/recordSearch.php?k=acceptAgreementsearchForm0909"
 
     @staticmethod
+    def collect_data(date):
+
+        year, month, day = OhioCounty._parse_date(date)
+        session = requests.Session()
+        OhioCounty._update_cookies(session)
+        k = OhioCounty._accept_continue(session)
+
+        payload = {'searchName': '', 'searchCase': '', 'searchFMonth': str(month), 'searchFDay': day,
+                   'searchFYear': year,
+                   'searchAgency[]': '0909', 'searchCaseType[]': 'PE', 'searchBlock': '100',
+                   'searchType': 'mainSearch', 'k': k}
+
+        headers = {
+            'Referer': 'https://probatecourt.bcohio.gov/recordSearch.php?k=acceptAgreementsearchForm0909',
+            "Origin": 'https://probatecourt.bcohio.gov', 'Content-Type': 'application/x-www-form-urlencoded'}
+
+        response = session.request("POST", OhioCounty.OHIO_COURT_SEARCH_URL, headers=headers, data=payload)
+
+        #     use bs4 to parse the response and select items which is under the id 'searchResults'
+        soup = bs4.BeautifulSoup(response.text, 'html.parser')
+        total_matches = int(soup.select_one('#matchCount').text.split()[0])
+        print(f'Total matches: {total_matches}')
+        if total_matches == 0:
+            return []
+
+        # Select all children of #searchResults
+        children = soup.select('#searchResults > div')
+
+        # For each child, select div.caseInfo > a.caseLink.icon
+        links = [child.select_one('div.caseInfo > a.caseLink.icon').get('href') for child in children]
+        all_decedent_info = [OhioCounty._get_current_decedent_info(session, link) for link in links]
+
+        return all_decedent_info
+
+    @staticmethod
     def _parse_date(date):
-        # Assuming the date is in the format 'YYYY-MM-DD'
-        year, month, day = date.split('-')
+        # Assuming the date is in the format 'MM/DD/YYYY'
+        month, day, year = date.split('/')
         return year, month, day
 
     @staticmethod
@@ -41,7 +76,7 @@ class OhioCounty:
             return None
 
     @staticmethod
-    def _extract_decedent_info(info_table):
+    def _extract_info(info_table):
         decedent_info = {}
         for tr in info_table.select('tr'):
             NON_BREAKING_SPACE = '\xa0'
@@ -50,6 +85,19 @@ class OhioCounty:
 
             if tr.select_one('th.column3').text != NON_BREAKING_SPACE:
                 decedent_info[tr.select_one('th.column3').text] = tr.select_one('td.column4').text
+
+        if 'City/State/ZIP:' in decedent_info:
+            city, state, zip_code = split_city_state_zip(decedent_info['City/State/ZIP:'])
+            decedent_info['City'] = city
+            decedent_info['State'] = state
+            decedent_info['Zip'] = zip_code
+
+        # remove ending : from the keys only if exist
+        decedent_info = {k[:-1] if k[-1] == ':' else k: v for k, v in decedent_info.items()}
+
+        if 'Phone Number' in decedent_info:
+            decedent_info['Telephone'] = decedent_info['Phone Number']
+            del decedent_info['Phone Number']
 
         return decedent_info
 
@@ -62,43 +110,13 @@ class OhioCounty:
 
         extracted_info = {'url': url}
         decedent_info_table = soup.select_one('#caseInformation > tr:nth-child(2) > td > div > table')
-        extracted_info['decedent_info'] = OhioCounty._extract_decedent_info(decedent_info_table)
+        extracted_info['decedent_info'] = OhioCounty._extract_info(decedent_info_table)
         fiduciary_info_table = soup.select_one('#caseInformation > tr:nth-child(4) > td > div > table')
-        extracted_info['fiduciary_info'] = OhioCounty._extract_decedent_info(fiduciary_info_table)
+        extracted_info['fiduciary_info'] = OhioCounty._extract_info(fiduciary_info_table)
 
         return extracted_info
 
-    @staticmethod
-    def collect_data(date):
-
-        year, month, day = OhioCounty._parse_date(date)
-        session = requests.Session()
-        OhioCounty._update_cookies(session)
-        k = OhioCounty._accept_continue(session)
-
-        payload = {'searchName': '', 'searchCase': '', 'searchFMonth': str(month), 'searchFDay': day,
-                   'searchFYear': year,
-                   'searchAgency[]': '0909', 'searchCaseType[]': 'PE', 'searchBlock': '25',
-                   'searchType': 'mainSearch', 'k': k}
-
-        headers = {
-            'Referer': 'https://probatecourt.bcohio.gov/recordSearch.php?k=acceptAgreementsearchForm0909',
-            "Origin": 'https://probatecourt.bcohio.gov', 'Content-Type': 'application/x-www-form-urlencoded'}
-
-        response = session.request("POST", OhioCounty.OHIO_COURT_SEARCH_URL, headers=headers, data=payload)
-
-        #     use bs4 to parse the response and select items which is under the id 'searchResults'
-        soup = bs4.BeautifulSoup(response.text, 'html.parser')
-        # Select all children of #searchResults
-        children = soup.select('#searchResults > div')
-
-        # For each child, select div.caseInfo > a.caseLink.icon
-        links = [child.select_one('div.caseInfo > a.caseLink.icon').get('href') for child in children]
-        all_decedent_info = [OhioCounty._get_current_decedent_info(session, link) for link in links]
-
-        return all_decedent_info
-
-estate_decedent_info = OhioCounty.collect_data("2024-09-30")
-
-with open('Extracted Info/Ohio County.json', 'w') as f:
-    json.dump(estate_decedent_info, f, indent=4)
+# estate_decedent_info = OhioCounty.collect_data("09/30/2024")
+#
+# with open('Extracted Info/Ohio County.json', 'w') as f:
+#     json.dump(estate_decedent_info, f, indent=4)
