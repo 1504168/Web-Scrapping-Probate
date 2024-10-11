@@ -34,27 +34,29 @@ def remove_parentheses(s):
 
 def extract_search_relatives_info(html_response):
     soup = bs4.BeautifulSoup(html_response, 'html.parser')
-    relatives_div = soup.select_one('div.res_main_row_middle > div.col_last')
+    phone_numbers_div = soup.select_one('div.res_main_row_middle > div.col_middle')
+
+    if phone_numbers_div is None:
+        print('No result found!')
+        return {'phone_numbers': [], 'email': ''}
+
     #   keep only div and remove the first div
-    relatives_div = relatives_div.find_all('div', recursive=False)[1:]
-    #   Now first div has relative name and last second one has phone numbers. and it keep that pattern. I want to loop and extract all
-    relatives_info = []
-    for i in range(0, len(relatives_div), 2):
-        relative_name = [remove_parentheses(idf) for idf in relatives_div[i].text.split('-')]
-        phone_numbers = []
+    phone_numbers_div = phone_numbers_div.find_all('div', recursive=False)[1:]
+    phone_numbers = []
+    for curr_div in phone_numbers_div:
+        phone_number = [remove_parentheses(idf) for idf in
+                        curr_div.text.replace('\xa0', ' ').split()]
+        phone_numbers.append(
+            {'phone_identifier': next(iter(phone_number), ''),
+             'phone_number': next(iter(phone_number[1:]), ''),
+             'date': next(iter(phone_number[2:]), '')})
 
-        for curr_div in relatives_div[i + 1].find_all('div', recursive=False):
-            phone_number = [remove_parentheses(idf) for idf in
-                            ' '.join(curr_div.text.replace('\xa0', '').split()).split()]
-            phone_numbers.append(
-                {'phone_identifier': next(iter(phone_number), ''),
-                 'phone_number': next(iter(phone_number[1:]), ''),
-                 'date': next(iter(phone_number[2:]), '')})
+    email = \
+        soup.select_one(
+            'div.result_block_main > div > div.res_main_row_top > div.col_last > div:nth-child(2)').text.split(
+            'Email Address:')[1].strip()
 
-        relatives_info.append({'relative_identifier': relative_name[0], 'relative_name': relative_name[1],
-                               'phone_numbers': phone_numbers})
-
-    return relatives_info
+    return {'phone_numbers': phone_numbers, 'email': email}
 
 
 class ExactDial():
@@ -89,9 +91,9 @@ class ExactDial():
         response = self.session.request("POST", self.LOGIN_URL, headers=headers, data=payload)
 
         if response.status_code == 200 and response.url == self.HOME_PAGE_URL:
-            print('Login successful')
+            print('Logged into ExactDial successfully')
             self.token = extract_token(response.text)
-            print('Token:', self.token)
+            # print('Token:', self.token)
 
     def search_record(self, first_name, last_name, city, state, address='', zip_code='', county=''):
         url = "https://app.exactdial.com/public/doSearch"
@@ -132,9 +134,9 @@ class ExactDial():
         extracted_info = extract_search_relatives_info(response.text)
         return extracted_info
 
-
 # create an instance of the class
-ed = ExactDial('Ibrahimfarhan444@gmail.com', 'chicago513')
-dump_json_to_file(ed.search_record('Stephen', 'Davis', 'Troy', 'Ohio'), 'Sample.json')
+# ed = ExactDial('Ibrahimfarhan444@gmail.com', 'chicago513')
+# dump_json_to_file(ed.search_record('Stephen', 'Davis', 'Troy', 'Ohio'), 'Sample.json')
+# dump_json_to_file(ed.search_record('GREGORY', 'ROTH', 'FAIRFIELD', 'Ohio',address='860 HICKS BLVD'), 'Sample2.json')
 
 # dump_json_to_file(extract_search_relatives_info(open('Sample.html').read()))

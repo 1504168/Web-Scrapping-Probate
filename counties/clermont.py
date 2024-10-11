@@ -1,3 +1,5 @@
+import json
+import re
 import time
 
 from selenium import webdriver
@@ -6,17 +8,21 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 
-from util.util import split_city_state_zip
+from util.util import split_city_state_zip, format_date
 
 
 class ClermontCounty:
 
     @staticmethod
-    def collect_data(date):
+    def collect_data_for_range(start_date, end_date=None):
+
+        if end_date is None:
+            end_date = start_date
+
         driver = webdriver.Chrome()
         ClermontCounty._goto_case_type_search_page(driver)
 
-        ClermontCounty._set_search_criteria(driver, date)
+        ClermontCounty._set_search_criteria(driver, start_date, end_date)
 
         # click search button
         driver.find_element(By.NAME, 'submitLink').click()
@@ -25,29 +31,62 @@ class ClermontCounty:
         try:
             ClermontCounty._wait_for_element(driver, By.ID, 'srchResultNoticeNomatch', 3)
             no_result_el = driver.find_element(By.ID, 'srchResultNoticeNomatch')
-            print('No search results found.')
+            print('No search results found in Clermont county.')
             return []
         except Exception:
-            print('Search results found.')
+            print('Search results found in Clermont county.')
 
         ClermontCounty._wait_for_element(driver, By.XPATH, '//*[@id="mainContent"]/div[2]/div[3]/div[1]/div[1]/span[1]')
 
         total_search_results = driver.find_element(By.XPATH,
                                                    '//*[@id="mainContent"]/div[2]/div[3]/div[1]/div[1]/span[1]').text
-        print('Total search results:', total_search_results)
 
-        all_case_hrefs = driver.find_elements(By.XPATH,
-                                              "//a[contains(@id, 'grid~row-') and contains(@id, '~cell-2$link')]")
-        total_cases = len(all_case_hrefs)
+        # Extract the total number of search results
+        matches = re.findall(r'\d+', total_search_results)
+        total_search_results = int(matches[-1]) if matches else 0
+
+        # Calculate the total number of pages
+        total_pages = (total_search_results + 49) // 50
+
+        print('Total search results:', total_search_results, 'Total pages:', total_pages)
+
         all_case_info = []
-        for i in range(1, total_cases + 1):
-            case_info = ClermontCounty._extract_current_case_details(driver, i)
-            all_case_info.append(case_info)
+
+        count = 0
+        # Process the search results in batches of 50
+        for page in range(total_pages):
+
+            # Process a batch of 50 results
+            if page > 0:
+                ClermontCounty.click_on_correct_page(driver, page + 1)
+
+            all_case_hrefs = driver.find_elements(By.XPATH,
+                                                  "//a[contains(@id, 'grid~row-') and contains(@id, '~cell-2$link')]")
+            total_cases = len(all_case_hrefs)
+            for i in range(total_cases):
+
+                if page > 0:
+                    ClermontCounty.click_on_correct_page(driver, page + 1)
+
+                case_info = ClermontCounty._extract_current_case_details(driver, i)
+                all_case_info.append(case_info)
+                count += 1
+                print('Case:', count, 'Case Number:', case_info['case_number'])
 
         # Remember to close the driver when you're done with it
         driver.quit()
 
         return all_case_info
+
+    @staticmethod
+    def click_on_correct_page(driver, page_number):
+        page_number = str(page_number)
+        try:
+            page_button = driver.find_element(By.XPATH, f'//a[@title="Go to page {page_number}"]')
+            page_button.click()
+            time.sleep(1)
+        except Exception:
+            print('Error clicking on page:', page_number)
 
     @staticmethod
     def _wait_for_element(driver, by, element_identifier, time_out=10):
@@ -87,11 +126,9 @@ class ClermontCounty:
         time.sleep(1)
 
     @staticmethod
-    def _set_search_criteria(driver, date):
-        month, day, year = date.split('/')
-        formatted_date = month.zfill(2) + '/' + day.zfill(2) + '/' + year.zfill(4)
-        ClermontCounty._set_date(driver, 'fileDateRange:dateInputBegin', formatted_date)
-        ClermontCounty._set_date(driver, 'fileDateRange:dateInputEnd', formatted_date)
+    def _set_search_criteria(driver, start_date, end_date):
+        ClermontCounty._set_date(driver, 'fileDateRange:dateInputBegin', format_date(start_date))
+        ClermontCounty._set_date(driver, 'fileDateRange:dateInputEnd', format_date(end_date))
 
         # select Estate, Open, Decedent
         ClermontCounty._select_item(driver, 'caseCd', 4)
@@ -103,8 +140,12 @@ class ClermontCounty:
 
     @staticmethod
     def _extract_current_case_details(driver, i):
-        id = 'grid~row-' + str(i) + '~cell-2$link'
-        case_href = driver.find_element(By.ID, id)
+
+        all_case_hrefs = driver.find_elements(By.XPATH,
+                                              "//a[contains(@id, 'grid~row-') and contains(@id, '~cell-2$link')]")
+
+        # id = 'grid~row-' + str(i) + '~cell-2$link'
+        case_href = all_case_hrefs[i]
         case_number = case_href.text
         case_href.click()
         time.sleep(1)
@@ -122,7 +163,7 @@ class ClermontCounty:
             decedent_info['City/State/ZIP'] = address[0][1]
             decedent_info['City'] = city
             decedent_info['State'] = state
-            decedent_info['Zip'] = zip
+            decedent_info['Zip'] = zip_code
 
         fiduciary_info = {'Fiduciary 1': decedent_and_applicant[1], 'Address': None,
                           'City/State/ZIP': None, 'City': None, 'State': None, 'Zip': None}
@@ -142,7 +183,8 @@ class ClermontCounty:
         driver.back()
         return case_info
 
-# extracted_info = ClermontCounty.collect_data('10/03/2024')
+
+# extracted_info = ClermontCounty.collect_data_for_range('06/01/2024', '10/10/2024')
 #
-# with open('Extracted Data/clermont_county_data.json', 'w') as f:
+# with open('../Extracted Data/clermont_county_data.json', 'w') as f:
 #     json.dump(extracted_info, f, indent=4)

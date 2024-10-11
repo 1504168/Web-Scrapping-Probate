@@ -1,3 +1,6 @@
+import json
+from datetime import datetime, timedelta
+
 import bs4
 import requests
 
@@ -96,8 +99,27 @@ class WarrenCounty:
         return case_details
 
     @staticmethod
-    def collect_data(date):
+    def collect_data_for_range(start_date, end_date=None):
+
+        if end_date is None:
+            end_date = start_date
+
+        start_date = datetime.strptime(start_date, '%m/%d/%Y')
+        end_date = datetime.strptime(end_date, '%m/%d/%Y')
+
         session = requests.Session()
+
+        all_decedent_info = []
+        current_date = start_date
+        while current_date <= end_date:
+            print(f'Collecting data for {current_date.strftime("%m/%d/%Y")}')
+            current_date_data = WarrenCounty._collect_data(current_date.strftime('%m/%d/%Y'), session)
+            all_decedent_info.extend(current_date_data)
+            current_date += timedelta(days=1)
+        return all_decedent_info
+
+    @staticmethod
+    def _collect_data(date, session):
         # Expected date format is YYYY-MM-DD
         year, month, day = WarrenCounty._parse_date(date)
         payload = WarrenCounty._create_payload(year, month, day)
@@ -118,7 +140,8 @@ class WarrenCounty:
 
         return all_case_details
 
-# estate_decedent_info = WarrenCounty.collect_data("09/30/2024")
+
+# estate_decedent_info = WarrenCounty.collect_data_for_range("09/30/2024", "10/10/2024")
 #
-# with open('Extracted Data/Warren County.json', 'w') as f:
+# with open('../Extracted Data/Warren County.json', 'w') as f:
 #     json.dump(estate_decedent_info, f, indent=4)

@@ -1,0 +1,22 @@
+[
+    {
+        "phone_numbers": [
+            {
+                "phone_identifier": "M",
+                "phone_number": "317-627-6641",
+                "date": "04/12/2024"
+            },
+            {
+                "phone_identifier": "M",
+                "phone_number": "317-410-9311",
+                "date": "05/14/2024"
+            },
+            {
+                "phone_identifier": "R",
+                "phone_number": "937-593-1142",
+                "date": "03/02/2023"
+            }
+        ],
+        "email": "steved0970@yahoo.com"
+    }
+]
