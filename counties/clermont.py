@@ -1,4 +1,4 @@
-import json
+import platform
 import re
 import time
 
@@ -19,7 +19,11 @@ class ClermontCounty:
         if end_date is None:
             end_date = start_date
 
-        driver = webdriver.Chrome()
+        if platform.system() == 'Darwin':  # Darwin is the name for the MacOS operating system
+            driver = webdriver.Safari()
+        else:
+            driver = webdriver.Chrome()
+
         ClermontCounty._goto_case_type_search_page(driver)
 
         ClermontCounty._set_search_criteria(driver, start_date, end_date)
@@ -182,7 +186,6 @@ class ClermontCounty:
                      }
         driver.back()
         return case_info
-
 
 # extracted_info = ClermontCounty.collect_data_for_range('06/01/2024', '10/10/2024')
 #
