@@ -1,5 +1,9 @@
 # for converting to executable
 # pyinstaller --onefile -n CourtDataExtractor main.py
+# for Mac universal: pyinstaller --onefile -n CourtDataExtractor main.py --target-arch=universal2
+# for Mac intel: pyinstaller --onefile -n CourtDataExtractor main.py --target-arch=x86_64
+# for Mac arm: pyinstaller --onefile -n CourtDataExtractor main.py --target-arch=arm64
+
 import json
 import os
 import sys
