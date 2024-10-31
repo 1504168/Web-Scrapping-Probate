@@ -19,11 +19,12 @@ class ClermontCounty:
         if end_date is None:
             end_date = start_date
 
-        if platform.system() == 'Darwin':  # Darwin is the name for the MacOS operating system
-            driver = webdriver.Safari()
-        else:
-            driver = webdriver.Chrome()
+        # if platform.system() == 'Darwin':  # Darwin is the name for the MacOS operating system
+        #    driver = webdriver.Safari()
+        # else:
+        #    driver = webdriver.Chrome()
 
+        driver = webdriver.Chrome()
         ClermontCounty._goto_case_type_search_page(driver)
 
         ClermontCounty._set_search_criteria(driver, start_date, end_date)
