@@ -5,3 +5,5 @@ build
 dist
 *.spec
 *.exe
+Extracted Data
+Court Data.xlsm
