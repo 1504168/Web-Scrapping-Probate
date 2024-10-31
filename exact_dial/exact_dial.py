@@ -51,6 +51,9 @@ def extract_search_relatives_info(html_response):
              'phone_number': next(iter(phone_number[1:]), ''),
              'date': next(iter(phone_number[2:]), '')})
 
+        # keep only those object which has phone_identifier of 'M'
+        phone_numbers = [phone for phone in phone_numbers if phone['phone_identifier'] == 'M']
+
     email = \
         soup.select_one(
             'div.result_block_main > div > div.res_main_row_top > div.col_last > div:nth-child(2)').text.split(
