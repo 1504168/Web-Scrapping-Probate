@@ -1,4 +1,3 @@
-import platform
 import re
 import time
 
@@ -73,8 +72,12 @@ class ClermontCounty:
                 if page > 0:
                     ClermontCounty.click_on_correct_page(driver, page + 1)
 
-                case_info = ClermontCounty._extract_current_case_details(driver, i)
-                all_case_info.append(case_info)
+                try:
+                    case_info = ClermontCounty._extract_current_case_details(driver, i)
+                    all_case_info.append(case_info)
+                except Exception as e:
+                    print(f'Error extracting case info for index {i}:{e}')
+
                 count += 1
                 print('Case:', count, 'Case Number:', case_info['case_number'])
 

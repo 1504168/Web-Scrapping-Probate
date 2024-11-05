@@ -1,13 +1,12 @@
-import json
 from datetime import datetime, timedelta
 
 import bs4
 import requests
 
-from util.util import split_city_state_zip
+from util.util import split_city_state_zip, format_phone_number
 
 
-class OhioCounty:
+class ButlerCounty:
     OHIO_COURT_SEARCH_URL = "https://probatecourt.bcohio.gov/recordSearch.php"
     ACCEPT_CONTINUE_URL = "https://probatecourt.bcohio.gov/recordSearch.php?k=acceptAgreementsearchForm0909"
 
@@ -21,22 +20,26 @@ class OhioCounty:
         end_date = datetime.strptime(end_date, '%m/%d/%Y')
 
         session = requests.Session()
-        OhioCounty._update_cookies(session)
-        k = OhioCounty._accept_continue(session)
+        ButlerCounty._update_cookies(session)
+        k = ButlerCounty._accept_continue(session)
 
         all_decedent_info = []
         current_date = start_date
         while current_date <= end_date:
             print(f'Collecting data for {current_date.strftime("%m/%d/%Y")}')
-            current_date_data = OhioCounty._collect_data(current_date.strftime('%m/%d/%Y'), k, session)
-            all_decedent_info.extend(current_date_data)
+            try:
+                current_date_data = ButlerCounty._collect_data(current_date.strftime('%m/%d/%Y'), k, session)
+                all_decedent_info.extend(current_date_data)
+            except Exception as e:
+                print(f'Error occurred while collecting data for {current_date.strftime("%m/%d/%Y")}: {e}')
+
             current_date += timedelta(days=1)
         return all_decedent_info
 
     @staticmethod
     def _collect_data(date, k, session):
 
-        year, month, day = OhioCounty._parse_date(date)
+        year, month, day = ButlerCounty._parse_date(date)
 
         payload = {'searchName': '', 'searchCase': '', 'searchFMonth': str(month), 'searchFDay': day,
                    'searchFYear': year,
@@ -47,7 +50,7 @@ class OhioCounty:
             'Referer': 'https://probatecourt.bcohio.gov/recordSearch.php?k=acceptAgreementsearchForm0909',
             "Origin": 'https://probatecourt.bcohio.gov', 'Content-Type': 'application/x-www-form-urlencoded'}
 
-        response = session.request("POST", OhioCounty.OHIO_COURT_SEARCH_URL, headers=headers, data=payload)
+        response = session.request("POST", ButlerCounty.OHIO_COURT_SEARCH_URL, headers=headers, data=payload)
 
         #     use bs4 to parse the response and select items which is under the id 'searchResults'
         soup = bs4.BeautifulSoup(response.text, 'html.parser')
@@ -61,7 +64,7 @@ class OhioCounty:
 
         # For each child, select div.caseInfo > a.caseLink.icon
         links = [child.select_one('div.caseInfo > a.caseLink.icon').get('href') for child in children]
-        all_decedent_info = [OhioCounty._get_current_decedent_info(session, link) for link in links]
+        all_decedent_info = [ButlerCounty._get_current_decedent_info(session, link) for link in links]
 
         return all_decedent_info
 
@@ -84,14 +87,14 @@ class OhioCounty:
 
     @staticmethod
     def _update_cookies(session):
-        response = session.get(OhioCounty.OHIO_COURT_SEARCH_URL)
-        session.headers.update(OhioCounty._get_common_headers(response.cookies.get_dict()))
+        response = session.get(ButlerCounty.OHIO_COURT_SEARCH_URL)
+        session.headers.update(ButlerCounty._get_common_headers(response.cookies.get_dict()))
 
     @staticmethod
     def _accept_continue(session):
         payload = {}
-        response = session.request("GET", OhioCounty.ACCEPT_CONTINUE_URL,
-                                   headers={'Referer': OhioCounty.OHIO_COURT_SEARCH_URL}, data=payload)
+        response = session.request("GET", ButlerCounty.ACCEPT_CONTINUE_URL,
+                                   headers={'Referer': ButlerCounty.OHIO_COURT_SEARCH_URL}, data=payload)
         if '<input type="hidden" name="k" id="k" value="' in response.text:
             return response.text.split('<input type="hidden" name="k" id="k" value="')[1].split('"')[0]
         else:
@@ -122,7 +125,7 @@ class OhioCounty:
         decedent_info = {k[:-1] if k[-1] == ':' else k: v for k, v in decedent_info.items()}
 
         if 'Phone Number' in decedent_info:
-            decedent_info['Telephone'] = decedent_info['Phone Number']
+            decedent_info['Telephone'] = format_phone_number(decedent_info['Phone Number'])
             del decedent_info['Phone Number']
 
         return decedent_info
@@ -132,17 +135,16 @@ class OhioCounty:
         print(f'Extracting data for {relative_url}')
         url = 'https://probatecourt.bcohio.gov' + relative_url
         payload = {}
-        response = session.request("GET", url, headers={'Referer': OhioCounty.OHIO_COURT_SEARCH_URL}, data=payload)
+        response = session.request("GET", url, headers={'Referer': ButlerCounty.OHIO_COURT_SEARCH_URL}, data=payload)
         soup = bs4.BeautifulSoup(response.text, 'html.parser')
 
         extracted_info = {'url': url}
         decedent_info_table = soup.select_one('#caseInformation > tr:nth-child(2) > td > div > table')
-        extracted_info['decedent_info'] = OhioCounty._extract_info(decedent_info_table)
+        extracted_info['decedent_info'] = ButlerCounty._extract_info(decedent_info_table)
         fiduciary_info_table = soup.select_one('#caseInformation > tr:nth-child(4) > td > div > table')
-        extracted_info['fiduciary_info'] = OhioCounty._extract_info(fiduciary_info_table)
+        extracted_info['fiduciary_info'] = ButlerCounty._extract_info(fiduciary_info_table)
 
         return extracted_info
-
 
 # estate_decedent_info = OhioCounty.collect_data_for_range("10/01/2024", "10/10/2024")
 # estate_decedent_info = OhioCounty.collect_data_for_range("09/01/2024", "10/10/2024")

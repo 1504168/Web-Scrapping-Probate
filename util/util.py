@@ -1,3 +1,5 @@
+import json
+
 import pandas as pd
 
 
@@ -48,3 +50,16 @@ def normalize_data(data):
 def format_date(date):
     month, day, year = date.split('/')
     return month.zfill(2) + '/' + day.zfill(2) + '/' + year.zfill(4)
+
+
+def format_phone_number(phone_number):
+    # Remove parentheses
+    phone_number = phone_number.replace('(', '').replace(')', '')
+    # Replace spaces with hyphens
+    phone_number = phone_number.replace(' ', '-')
+    return phone_number
+
+
+def dump_json_to_file(data, file_name_or_path='Sample.json'):
+    with open(file_name_or_path, 'w') as f:
+        json.dump(data, f, indent=4)

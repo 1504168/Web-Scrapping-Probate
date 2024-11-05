@@ -10,10 +10,11 @@ import sys
 
 import pandas as pd
 
-from counties.butler import OhioCounty
+from counties.butler import ButlerCounty
 from counties.clermont import ClermontCounty
 from counties.warren import WarrenCounty
 from exact_dial import exact_dial
+from propstream.propstream import PropStream
 from util.util import normalize_data
 
 
@@ -51,26 +52,65 @@ def extract_phone_and_email_from_exact_dial(df, executable_location):
         state = row['fiduciary_info.State']
         zip_code = row['fiduciary_info.Zip']
         address = row['fiduciary_info.Address']
-        info = ed_instance.search_record(first_name, last_name, city, state, address, zip_code)
-        df.at[index, 'exact_dial_Fiduciary 1_email_address'] = info['email']
+        try:
+            info = ed_instance.search_record(first_name, last_name, city, state, address, zip_code)
+            if 'email' in info:
+                df.at[index, 'exact_dial_Fiduciary 1_email_address'] = info['email']
 
-        phone_numbers = info['phone_numbers']
-        for i, phone in enumerate(phone_numbers):
-            df.at[index, f'exact_dial_Fiduciary 1_phone_number_{i + 1}'] = phone['phone_number']
-            df.at[index, f'exact_dial_Fiduciary 1_phone_number_{i + 1}_identifier'] = phone['phone_identifier']
-            df.at[index, f'exact_dial_Fiduciary 1_phone_number_{i + 1}_last_used_date'] = phone['date']
+            phone_numbers = []
+            fiduciary_1_phone_number_1 = row['fiduciary_info.Telephone']
+            if 'phone_numbers' in info:
+                phone_numbers = info['phone_numbers']
+
+            for i, phone in enumerate(phone_numbers):
+                if phone['phone_number'] == fiduciary_1_phone_number_1:
+                    continue
+
+                df.at[index, f'exact_dial_Fiduciary 1_phone_number_{i + 1}'] = phone['phone_number']
+                df.at[index, f'exact_dial_Fiduciary 1_phone_number_{i + 1}_last_used_date'] = phone['date']
+
+        except Exception as e:
+            print(f'Error occurred while extracting phone and email for {first_name} {last_name}: {e}')
+
+    return df
+
+
+def extract_estimated_value_from_propstream(df, executable_location):
+    config = json.load(open(os.path.join(executable_location, 'config.json')))
+
+    propstream_instance = PropStream(username=config['propstream_email'],
+                                     password=config['propstream_password'])
+
+    # loop through each row in the dataframe
+    for index, row in df.iterrows():
+        address = row['decedent_info.Address']
+        city_state_zip = row['decedent_info.City/State/ZIP']
+
+        if not address or not city_state_zip:
+            continue
+
+        try:
+            info = propstream_instance.search_property_estimated_value(address=address + ', ' + city_state_zip)
+            if not info:
+                continue
+
+            if 'estimatedValue' in info:
+                df.at[index, 'estimated_value'] = info['estimatedValue']
+
+        except Exception as e:
+            print(f'Error occurred while extracting estimated value for {address}: {e}')
 
     return df
 
 
 def collect_all_county_data(start_date, end_date, executable_location):
     dfs = []
-    ohio_data = OhioCounty.collect_data_for_range(start_date, end_date)
-    if ohio_data:
-        ohio_data = normalize_data(ohio_data)
-        ohio_data['county'] = 'Butler'
-        dfs.append(ohio_data)
-        print(f'Ohio County data collected. Total cases: {len(ohio_data)}')
+    butler_data = ButlerCounty.collect_data_for_range(start_date, end_date)
+    if butler_data:
+        butler_data = normalize_data(butler_data)
+        butler_data['county'] = 'Butler'
+        dfs.append(butler_data)
+        print(f'Butler County data collected. Total cases: {len(butler_data)}')
 
     warren_data = WarrenCounty.collect_data_for_range(start_date, end_date)
     if warren_data:
@@ -93,6 +133,7 @@ def collect_all_county_data(start_date, end_date, executable_location):
     df = pd.concat(dfs, ignore_index=True)
     print(f'Total cases collected: {len(df)}')
     df = extract_phone_and_email_from_exact_dial(df, executable_location)
+    df = extract_estimated_value_from_propstream(df, executable_location)
     return df
 
 
@@ -111,7 +152,7 @@ if __name__ == '__main__':
     print(f'Executable location: {executable_location}')
     start_date = input('Enter the start date in format MM/DD/YYYY: ')
     if not start_date:
-        start_date = pd.Timestamp.now().strftime('%m/%d/%Y')
+        start_date = (pd.Timestamp.now() - pd.Timedelta(days=1)).strftime('%m/%d/%Y')
 
     end_date = input('Enter the end date in format MM/DD/YYYY: ')
     if not end_date:

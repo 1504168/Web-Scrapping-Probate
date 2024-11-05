@@ -1,4 +1,4 @@
-import json
+from datetime import datetime
 
 import bs4
 import requests
@@ -21,11 +21,6 @@ def extract_token(html_response):
 def dump_to_file(text, file_name_or_path='Sample.html'):
     with open(file_name_or_path, 'w') as f:
         f.write(text)
-
-
-def dump_json_to_file(data, file_name_or_path='Sample.json'):
-    with open(file_name_or_path, 'w') as f:
-        json.dump(data, f, indent=4)
 
 
 def remove_parentheses(s):
@@ -51,8 +46,20 @@ def extract_search_relatives_info(html_response):
              'phone_number': next(iter(phone_number[1:]), ''),
              'date': next(iter(phone_number[2:]), '')})
 
-        # keep only those object which has phone_identifier of 'M'
+    # keep only those object which has phone_identifier of 'M'
+    if phone_numbers:
         phone_numbers = [phone for phone in phone_numbers if phone['phone_identifier'] == 'M']
+        phone_numbers = sorted(phone_numbers,
+                               key=lambda x: datetime.strptime(x['date'], '%m/%d/%Y') if x['date'] else datetime.min,
+                               reverse=True)
+
+    # if more than three phone numbers are found, keep only then sort by date and keep the latest three
+    if len(phone_numbers) > 3:
+        phone_numbers = phone_numbers[:3]
+
+    # remove phone_identifier
+    for phone in phone_numbers:
+        phone.pop('phone_identifier')
 
     email = \
         soup.select_one(

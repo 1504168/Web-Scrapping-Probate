@@ -1,10 +1,9 @@
-import json
 from datetime import datetime, timedelta
 
 import bs4
 import requests
 
-from util.util import split_city_state_zip
+from util.util import split_city_state_zip, format_phone_number
 
 
 class WarrenCounty:
@@ -76,6 +75,9 @@ class WarrenCounty:
             info_dict['State'] = state
             info_dict['Zip'] = zip_code
 
+        if 'Telephone' in info_dict:
+            info_dict['Telephone'] = format_phone_number(info_dict['Telephone'])
+
         return info_dict
 
     @staticmethod
@@ -113,8 +115,12 @@ class WarrenCounty:
         current_date = start_date
         while current_date <= end_date:
             print(f'Collecting data for {current_date.strftime("%m/%d/%Y")}')
-            current_date_data = WarrenCounty._collect_data(current_date.strftime('%m/%d/%Y'), session)
-            all_decedent_info.extend(current_date_data)
+            try:
+                current_date_data = WarrenCounty._collect_data(current_date.strftime('%m/%d/%Y'), session)
+                all_decedent_info.extend(current_date_data)
+            except Exception as e:
+                print(f'Error occurred while collecting data for {current_date.strftime("%m/%d/%Y")}: {e}')
+
             current_date += timedelta(days=1)
         return all_decedent_info
 
@@ -139,7 +145,6 @@ class WarrenCounty:
             all_case_details.append(WarrenCounty._collect_case_details(session, estate_link))
 
         return all_case_details
-
 
 # estate_decedent_info = WarrenCounty.collect_data_for_range("09/30/2024", "10/10/2024")
 #
