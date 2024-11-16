@@ -1,7 +1,10 @@
+import pdb
 from datetime import datetime
 
 import bs4
 import requests
+
+from util.util import dump_json_to_file
 
 
 def extract_search_id(html_response):
@@ -33,18 +36,63 @@ def extract_search_relatives_info(html_response):
 
     if phone_numbers_div is None:
         print('No result found!')
-        return {'phone_numbers': [], 'email': ''}
+        return {'current_address': '', 'phone_numbers': [], 'email': '', 'relatives': []}
 
     #   keep only div and remove the first div
+    phone_numbers = get_clean_phone_numbers(phone_numbers_div)
+
+    relatives_div = soup.select_one('div.res_main_row_middle > div.col_last')
+
+    relative_info = get_relatives_phone_numbers(relatives_div)
+
+    current_address = soup.select_one('div.res_main_row_top > div.col_last > div').text.split('Current Address:')[
+        1].strip()
+
+    email = \
+        soup.select_one(
+            'div.result_block_main > div > div.res_main_row_top > div.col_last > div:nth-child(2)').text.split(
+            'Email Address:')[1].strip()
+
+    return {'current_address': current_address, 'phone_numbers': phone_numbers, 'email': email,
+            'relatives': relative_info}
+
+
+def get_relatives_phone_numbers(relatives_div):
+    relatives_div = relatives_div.find_all('div', recursive=False)[1:]
+    phone_numbers = []
+
+    # first div has relative identifer and second one has numbers. so we need to loop in steps of 2
+    for i in range(0, len(relatives_div), 2):
+        current_relative_info = {}
+        current_relative_info['identifier'] = remove_parentheses(relatives_div[i].text.split('-')[0].strip())
+        current_relative_info['name'] = relatives_div[i].text.split('-')[1].strip()
+        divs = relatives_div[i + 1].find_all('div', recursive=False)
+        numbers = [get_current_div_number(div) for div in divs]
+        if numbers:
+            numbers = [phone for phone in numbers if phone['phone_identifier'] == 'M']
+            numbers = sorted(numbers,
+                             key=lambda x: datetime.strptime(x['date'], '%m/%d/%Y') if x['date'] else datetime.min,
+                             reverse=True)
+
+            # if more than three phone numbers are found, keep only then sort by date and keep the latest three
+            if len(numbers) > 3:
+                numbers = numbers[:3]
+
+            # remove phone_identifier
+            for phone in numbers:
+                phone.pop('phone_identifier')
+
+        current_relative_info['phone_numbers'] = numbers
+        phone_numbers.append(current_relative_info)
+
+    return phone_numbers
+
+
+def get_clean_phone_numbers(phone_numbers_div):
     phone_numbers_div = phone_numbers_div.find_all('div', recursive=False)[1:]
     phone_numbers = []
     for curr_div in phone_numbers_div:
-        phone_number = [remove_parentheses(idf) for idf in
-                        curr_div.text.replace('\xa0', ' ').split()]
-        phone_numbers.append(
-            {'phone_identifier': next(iter(phone_number), ''),
-             'phone_number': next(iter(phone_number[1:]), ''),
-             'date': next(iter(phone_number[2:]), '')})
+        phone_numbers.append(get_current_div_number(curr_div))
 
     # keep only those object which has phone_identifier of 'M'
     if phone_numbers:
@@ -52,21 +100,22 @@ def extract_search_relatives_info(html_response):
         phone_numbers = sorted(phone_numbers,
                                key=lambda x: datetime.strptime(x['date'], '%m/%d/%Y') if x['date'] else datetime.min,
                                reverse=True)
-
     # if more than three phone numbers are found, keep only then sort by date and keep the latest three
     if len(phone_numbers) > 3:
         phone_numbers = phone_numbers[:3]
-
     # remove phone_identifier
     for phone in phone_numbers:
         phone.pop('phone_identifier')
 
-    email = \
-        soup.select_one(
-            'div.result_block_main > div > div.res_main_row_top > div.col_last > div:nth-child(2)').text.split(
-            'Email Address:')[1].strip()
+    return phone_numbers
 
-    return {'phone_numbers': phone_numbers, 'email': email}
+
+def get_current_div_number(curr_div):
+    phone_number = [remove_parentheses(idf) for idf in
+                    curr_div.text.replace('\xa0', ' ').split()]
+    return {'phone_identifier': next(iter(phone_number), ''),
+            'phone_number': next(iter(phone_number[1:]), ''),
+            'date': next(iter(phone_number[2:]), '')}
 
 
 class ExactDial():
@@ -105,12 +154,13 @@ class ExactDial():
             self.token = extract_token(response.text)
             # print('Token:', self.token)
 
-    def search_record(self, first_name, last_name, city, state, address='', zip_code='', county=''):
+    def search_record(self, first_name, last_name, city, state, address='', zip_code='', county='', middle_name=''):
         url = "https://app.exactdial.com/public/doSearch"
 
         payload = {'_token': self.token, 'firstName': first_name, 'lastName': last_name,
                    'address': address, 'city': city, 'state': state, 'nicknamesearch': 'on',
-                   'middleName': '', 'phonenumber': '', 'zip': zip_code, 'county': county, 'dob': '', 'ageMin': '',
+                   'middleName': middle_name, 'phonenumber': '', 'zip': zip_code, 'county': county, 'dob': '',
+                   'ageMin': '',
                    'ageMax': '', 'hid_search_type': '1', 'hid_redirect': 'home'}
 
         headers = {
@@ -149,4 +199,4 @@ class ExactDial():
 # dump_json_to_file(ed.search_record('Stephen', 'Davis', 'Troy', 'Ohio'), 'Sample.json')
 # dump_json_to_file(ed.search_record('GREGORY', 'ROTH', 'FAIRFIELD', 'Ohio',address='860 HICKS BLVD'), 'Sample2.json')
 
-# dump_json_to_file(extract_search_relatives_info(open('Sample.html').read()))
+# dump_json_to_file(extract_search_relatives_info(open('Sample.html').read()), 'Sample2.json')

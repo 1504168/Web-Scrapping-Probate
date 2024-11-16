@@ -4,10 +4,6 @@
   "propstream_email": "Ibrahimfarhan444@gmail.com",
   "propstream_password": "Chicago513!",
   "legacy.com urls": {
-    "Butler": "https://www.legacy.com/us/obituaries/local/ohio/butler-county",
-    "Clermont": "https://www.legacy.com/us/obituaries/local/ohio/clermont-county",
-    "Hamilton": "https://www.legacy.com/us/obituaries/local/ohio/hamilton-county",
-    "Montgomery": "https://www.legacy.com/us/obituaries/local/ohio/montgomery-county",
-    "Warren": "https://www.legacy.com/us/obituaries/local/ohio/warren-county"
+    "Butler": "https://www.legacy.com/us/obituaries/local/ohio/butler-county"
   }
 }
