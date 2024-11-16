@@ -190,7 +190,7 @@ class ExactDial():
 
         response = self.session.request("POST", url, headers=headers, data=payload)
 
-        dump_to_file(response.text, 'Sample.html')
+        # dump_to_file(response.text, 'Sample.html')
         extracted_info = extract_search_relatives_info(response.text)
         return extracted_info
 

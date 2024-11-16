@@ -112,7 +112,7 @@ class LegacyDataCollector:
         return obituaries
 
 
-class ExtractedData:
+class LegacyExactDialPropStreamIntegrator:
     def __init__(self, start_date, end_date, legacy_data):
         self.start_date = start_date
         self.end_date = end_date
@@ -122,7 +122,7 @@ class ExtractedData:
 
     def update_from_exact_dial_and_prop_stream(self):
 
-        if self.data is None:
+        if not self.data:
             print('No data to update')
             return
 
@@ -213,13 +213,22 @@ class ExtractedData:
             print(f'Error occurred while extracting estimated value for {address}: {e}')
 
 
-cf_clearance = (
-    'duFww2NkRvR_x2qGiu5o_Dp_IZ8X5wV5iVYqdz.987M-1731727144-1.2.1.1-sDGmktRMz9n7kpsWmgKbPR3ldaXQodW0G2bIxrA9OIY3HU9683.SoJIH.0niZZ78on4bUe1UwK...jN4GlaigERYiFF8ybGqsT8abe55NAB3naMbzOZ.xldmJYpmhCEFiypprH0GLYgaZI5rWk6TniNnTDcUZgerul3s3Q663OVJmDXCRBLUMb8hOis3WJf5hrCOajpV.a0nMAhZ7jOo_uojnm1GduaeCznvpuvSP8Bcn_xmnjP8rX5L8yBa.mxHM0TWf3.thKqTyCWMmWW52bArMITl3cHAathPl6hNMlIomqwEZuCHJYF8fjxeF0SfQGgavFHiU_mD8dk4myzhKxufN4nvQ.FdZEICAMUsprpxJpQomy5Z8oRVjrbozxM5LdsToYk5yFdqGebLpA4x1DU.9cLPNT6crzG5Px8fuGo6U0CtivPXXgDQNAwVWCOQ')
+# cf_clearance = (
+#     'duFww2NkRvR_x2qGiu5o_Dp_IZ8X5wV5iVYqdz.987M-1731727144-1.2.1.1-sDGmktRMz9n7kpsWmgKbPR3ldaXQodW0G2bIxrA9OIY3HU9683.SoJIH.0niZZ78on4bUe1UwK...jN4GlaigERYiFF8ybGqsT8abe55NAB3naMbzOZ.xldmJYpmhCEFiypprH0GLYgaZI5rWk6TniNnTDcUZgerul3s3Q663OVJmDXCRBLUMb8hOis3WJf5hrCOajpV.a0nMAhZ7jOo_uojnm1GduaeCznvpuvSP8Bcn_xmnjP8rX5L8yBa.mxHM0TWf3.thKqTyCWMmWW52bArMITl3cHAathPl6hNMlIomqwEZuCHJYF8fjxeF0SfQGgavFHiU_mD8dk4myzhKxufN4nvQ.FdZEICAMUsprpxJpQomy5Z8oRVjrbozxM5LdsToYk5yFdqGebLpA4x1DU.9cLPNT6crzG5Px8fuGo6U0CtivPXXgDQNAwVWCOQ')
+
+message = ('Open https://www.legacy.com/us/obituaries/local/ohio/butler-county and copy the cf_clearance cookie value '
+           'and provide here:')
+cf_clearance = input(message)
+
+if not cf_clearance:
+    print('cf_clearance value is required')
+    exit(1)
 
 legacy_data_collector = LegacyDataCollector(cf_clearance)
 extracted_info = legacy_data_collector.collect_data_for_all_counties()
-extracted_data = ExtractedData(legacy_data=extracted_info, start_date=legacy_data_collector.start_date,
-                               end_date=legacy_data_collector.end_date)
+extracted_data = LegacyExactDialPropStreamIntegrator(legacy_data=extracted_info,
+                                                     start_date=legacy_data_collector.start_date,
+                                                     end_date=legacy_data_collector.end_date)
 
 extracted_data.update_from_exact_dial_and_prop_stream()
 
