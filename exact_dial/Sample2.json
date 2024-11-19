@@ -1,0 +1,485 @@
+{
+    "current_address": "7045 PETERS RD, TIPP CITY, OH 45371-2023",
+    "phone_numbers": [
+        {
+            "phone_number": "317-410-9311",
+            "date": "05/14/2024"
+        },
+        {
+            "phone_number": "317-627-6641",
+            "date": "04/12/2024"
+        }
+    ],
+    "email": "steved0970@yahoo.com",
+    "relatives": [
+        {
+            "identifier": "R",
+            "name": "AMY DAVIS",
+            "phone_numbers": [
+                {
+                    "phone_number": "317-410-9311",
+                    "date": "11/03/2023"
+                },
+                {
+                    "phone_number": "317-281-5733",
+                    "date": "05/03/2008"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "JANETTE DAVIS",
+            "phone_numbers": [
+                {
+                    "phone_number": "502-396-0892",
+                    "date": "07/07/2022"
+                },
+                {
+                    "phone_number": "502-396-0982",
+                    "date": "04/17/2018"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "JOHN DAVIS",
+            "phone_numbers": []
+        },
+        {
+            "identifier": "R",
+            "name": "PATSY DAVIS",
+            "phone_numbers": [
+                {
+                    "phone_number": "937-272-3639",
+                    "date": "09/01/2009"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "DILLON DAVIS",
+            "phone_numbers": [
+                {
+                    "phone_number": "502-297-4266",
+                    "date": "01/30/2023"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "ZACHARY DAVIS",
+            "phone_numbers": [
+                {
+                    "phone_number": "937-474-2672",
+                    "date": "05/14/2024"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "BONITTA DAVIS",
+            "phone_numbers": [
+                {
+                    "phone_number": "419-957-8206",
+                    "date": "12/16/2022"
+                },
+                {
+                    "phone_number": "419-422-3513",
+                    "date": "06/07/2014"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "AMY DAVIS",
+            "phone_numbers": [
+                {
+                    "phone_number": "937-508-9484",
+                    "date": "10/01/2022"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "DAWN DAVIS",
+            "phone_numbers": []
+        },
+        {
+            "identifier": "R",
+            "name": "JANIS BEAMER",
+            "phone_numbers": [
+                {
+                    "phone_number": "210-884-1241",
+                    "date": "11/12/2021"
+                },
+                {
+                    "phone_number": "210-884-1251",
+                    "date": "11/24/2019"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "BRENT DAVIS",
+            "phone_numbers": [
+                {
+                    "phone_number": "937-620-5671",
+                    "date": "02/06/2024"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "PAUL MULLINS",
+            "phone_numbers": [
+                {
+                    "phone_number": "903-870-6045",
+                    "date": "10/22/2015"
+                },
+                {
+                    "phone_number": "903-819-9386",
+                    "date": "08/03/2014"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "CURT BRADLEY",
+            "phone_numbers": [
+                {
+                    "phone_number": "812-629-3992",
+                    "date": "01/22/2020"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "WILLIAM BRADLEY",
+            "phone_numbers": [
+                {
+                    "phone_number": "812-573-7180",
+                    "date": "09/30/2014"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "DEANA JACKSON",
+            "phone_numbers": [
+                {
+                    "phone_number": "317-690-4045",
+                    "date": "09/08/2024"
+                },
+                {
+                    "phone_number": "317-412-4458",
+                    "date": "08/25/2024"
+                },
+                {
+                    "phone_number": "407-592-0709",
+                    "date": "05/13/2024"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "BESSIE MULLINS",
+            "phone_numbers": []
+        },
+        {
+            "identifier": "R",
+            "name": "LACY MULLINS",
+            "phone_numbers": [
+                {
+                    "phone_number": "317-314-2288",
+                    "date": "09/03/2024"
+                },
+                {
+                    "phone_number": "317-645-7628",
+                    "date": "07/27/2024"
+                },
+                {
+                    "phone_number": "317-606-6273",
+                    "date": "11/15/2020"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "MELISSA MULLINS",
+            "phone_numbers": [
+                {
+                    "phone_number": "480-388-6267",
+                    "date": "08/21/2023"
+                },
+                {
+                    "phone_number": "317-702-4844",
+                    "date": "02/06/2019"
+                },
+                {
+                    "phone_number": "480-406-0950",
+                    "date": "01/22/2017"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "TERRI MULLINS",
+            "phone_numbers": [
+                {
+                    "phone_number": "317-702-3480",
+                    "date": "10/29/2019"
+                },
+                {
+                    "phone_number": "260-578-0417",
+                    "date": "09/17/2008"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "CAROLYN BRADLEY",
+            "phone_numbers": [
+                {
+                    "phone_number": "812-629-3286",
+                    "date": "01/15/2024"
+                },
+                {
+                    "phone_number": "812-205-7878",
+                    "date": "10/03/2007"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "JERRY WYNN",
+            "phone_numbers": [
+                {
+                    "phone_number": "812-430-1148",
+                    "date": "10/15/2017"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "JEFFREY FLECKNER",
+            "phone_numbers": [
+                {
+                    "phone_number": "419-422-3513",
+                    "date": "08/01/2023"
+                },
+                {
+                    "phone_number": "419-348-0116",
+                    "date": "10/27/2019"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "JOSEPH GILL",
+            "phone_numbers": [
+                {
+                    "phone_number": "937-272-7063",
+                    "date": "11/06/2017"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "RICK MULLINS",
+            "phone_numbers": [
+                {
+                    "phone_number": "716-417-2422",
+                    "date": "07/05/2024"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "FELICIA MAYBERRY",
+            "phone_numbers": [
+                {
+                    "phone_number": "443-564-7579",
+                    "date": "07/25/2024"
+                },
+                {
+                    "phone_number": "443-819-6213",
+                    "date": "03/07/2023"
+                },
+                {
+                    "phone_number": "443-564-7578",
+                    "date": "06/01/2015"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "KELSEY MULLINS",
+            "phone_numbers": [
+                {
+                    "phone_number": "903-819-6016",
+                    "date": "04/18/2018"
+                },
+                {
+                    "phone_number": "903-819-9386",
+                    "date": "07/02/2015"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "VICTORIA DANIEL",
+            "phone_numbers": [
+                {
+                    "phone_number": "502-271-7635",
+                    "date": "01/01/2024"
+                }
+            ]
+        },
+        {
+            "identifier": "R",
+            "name": "HEATH DAVIS",
+            "phone_numbers": [
+                {
+                    "phone_number": "513-465-9690",
+                    "date": "02/06/2024"
+                },
+                {
+                    "phone_number": "937-266-2703",
+                    "date": "01/29/2010"
+                }
+            ]
+        },
+        {
+            "identifier": "A",
+            "name": "TREVOR HOLLON",
+            "phone_numbers": [
+                {
+                    "phone_number": "937-250-5623",
+                    "date": "07/21/2023"
+                }
+            ]
+        },
+        {
+            "identifier": "A",
+            "name": "MATTHEW HOLLON",
+            "phone_numbers": [
+                {
+                    "phone_number": "513-317-3456",
+                    "date": "09/29/2024"
+                },
+                {
+                    "phone_number": "937-572-5984",
+                    "date": "08/20/2024"
+                },
+                {
+                    "phone_number": "321-446-8398",
+                    "date": "07/23/2024"
+                }
+            ]
+        },
+        {
+            "identifier": "A",
+            "name": "CEANA HOLLON",
+            "phone_numbers": [
+                {
+                    "phone_number": "937-999-7043",
+                    "date": "09/17/2024"
+                },
+                {
+                    "phone_number": "937-689-4345",
+                    "date": "01/21/2024"
+                },
+                {
+                    "phone_number": "937-689-4470",
+                    "date": "09/01/2009"
+                }
+            ]
+        },
+        {
+            "identifier": "A",
+            "name": "SEAN DODSON",
+            "phone_numbers": [
+                {
+                    "phone_number": "937-623-8439",
+                    "date": "07/23/2024"
+                },
+                {
+                    "phone_number": "513-264-0941",
+                    "date": "02/27/2016"
+                }
+            ]
+        },
+        {
+            "identifier": "A",
+            "name": "DAWN DODSON",
+            "phone_numbers": [
+                {
+                    "phone_number": "937-623-8439",
+                    "date": "07/23/2024"
+                },
+                {
+                    "phone_number": "513-264-0941",
+                    "date": "02/27/2016"
+                }
+            ]
+        },
+        {
+            "identifier": "A",
+            "name": "SUSAN MORLAND",
+            "phone_numbers": [
+                {
+                    "phone_number": "937-626-0226",
+                    "date": "05/12/2024"
+                },
+                {
+                    "phone_number": "937-418-4131",
+                    "date": "02/06/2024"
+                },
+                {
+                    "phone_number": "216-513-0074",
+                    "date": "10/31/2023"
+                }
+            ]
+        },
+        {
+            "identifier": "A",
+            "name": "DEBRA BEALL",
+            "phone_numbers": []
+        },
+        {
+            "identifier": "A",
+            "name": "MICHAEL BERRY",
+            "phone_numbers": [
+                {
+                    "phone_number": "937-489-7900",
+                    "date": "06/07/2024"
+                }
+            ]
+        },
+        {
+            "identifier": "A",
+            "name": "RYAN WHITE",
+            "phone_numbers": [
+                {
+                    "phone_number": "937-474-3948",
+                    "date": "09/19/2024"
+                }
+            ]
+        },
+        {
+            "identifier": "A",
+            "name": "BILL GUTHRIE",
+            "phone_numbers": []
+        },
+        {
+            "identifier": "A",
+            "name": "DEAN BOURELLE",
+            "phone_numbers": [
+                {
+                    "phone_number": "937-672-4754",
+                    "date": "11/03/2015"
+                }
+            ]
+        }
+    ]
+}
